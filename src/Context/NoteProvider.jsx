@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { createContext } from "react";
-import CreateRed from "../Component/CreateRed";
-import CreateYellow from "../Component/CreateYellow";
-import CreateOrange from "../Component/CreateOrange";
+import CreateBlue from "../Component/CreateBlue";
+import CreatePink from "../Component/CreatePink";
+import CreateButtercream from "../Component/CreateButtercream";
 
 export const NoteContext = createContext();
 const NoteProvider = ({ children }) => {
@@ -11,24 +11,33 @@ const NoteProvider = ({ children }) => {
   const toggle = () => {
     setIsShowing(!isShowing);
   };
-  const Red = () => {
-    setDivs([...divs, <CreateRed key={divs.length} />]);
+  const Buttercream = () => {
+    setDivs([...divs, <CreateButtercream key={divs.length} />]);
   };
-  const Yellow = () => {
-    setDivs([...divs, <CreateYellow key={divs.length} />]);
+  const Blue = () => {
+    setDivs([...divs, <CreateBlue key={divs.length} />]);
   };
-  const Orange = () => {
-    setDivs([...divs, <CreateOrange key={divs.length} />]);
+  const Pink = () => {
+    setDivs([...divs, <CreatePink key={divs.length} />]);
   };
+
+    const date = new Date().toLocaleDateString();
+    const time = new Date()
+    const hour = time.getHours() 
+    const minutes = String(time.getMinutes()).padStart(2,"0")
+    const seconds = String(time.getSeconds()).padStart(2,"0")
+    const dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    const day = dayOfWeek[time.getDay()]
+
   const value = {
     toggle,
-    Red,
-    Yellow,
-    Orange,
+    Buttercream,
+    Blue,
+    Pink,
     isShowing,
     setIsShowing,
     divs,
-    setDivs,
+    setDivs, date, hour, minutes, seconds, day,
   };
   return <NoteContext.Provider value={value}>{children}</NoteContext.Provider>;
 };

@@ -3,7 +3,7 @@ import { FaCalendarPlus } from "react-icons/fa";
 import {NoteContext} from "../Context/NoteProvider";
 
 const Aside = () => {
-  const { toggle, Red, Yellow, Orange, isShowing, divs } = useContext(NoteContext);
+  const { toggle, Buttercream, Blue, Pink, isShowing, divs } = useContext(NoteContext);
   return (
     <div className="flex flex-col items-center justify-center w-full gap-2 py-3 md:pt-10">
       <div
@@ -18,19 +18,19 @@ const Aside = () => {
           <div
             className="w-4 h-4 bg-[#FFF6CA] rounded-full md:h-6 md:w-6"
             onClick={() => {
-              Red();
+              Buttercream();
             }}
           ></div>
           <div
             className="w-4 h-4 bg-[#DFF2FF] rounded-full md:h-6 md:w-6"
             onClick={() => {
-              Yellow();
+              Blue();
             }}
           ></div>
           <div
             className="w-4 h-4 bg-[#FFD7D5] rounded-full md:h-6 md:w-6"
             onClick={() => {
-              Orange();
+              Pink();
             }}
           ></div>
         </div>
