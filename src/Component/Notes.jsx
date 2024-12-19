@@ -10,7 +10,7 @@ const Notes = () => {
           <h1 className="font-bold text-[25px]">My Notes </h1>
           <LuNotebookText className="text-[25px]" />
         </div>
-        <div className="flex flex-row flex-wrap items-center w-full gap-5 mt-3">
+        <div className="flex flex-col items-center w-full gap-5 mt-3 md:flex-wrap md:flex-row">
         {divs}
         </div>
       </div>

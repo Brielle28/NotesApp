@@ -5,7 +5,7 @@ import { NoteContext } from "../Context/NoteProvider";
 const CreatePink = () => {
   const {date, hour, minutes, seconds, day,} = useContext(NoteContext)
   return (
-    <div className="bg-[#FFD7D5] md:w-[350px] md:h-[300px] rounded-[15px] px-2 py-4 ">
+    <div className="bg-[#FFD7D5] w-[90%] md:w-[350px] md:h-[300px] rounded-[15px] px-2 py-4 ">
           <h1 className="text-[12px] font-semibold">{date}</h1>
           <div className="mt-[3px] flex items-center justify-between w-full">
             <input placeholder="Enter Note Title" className="text-[20px] outline-none outline-0 font-semibold bg-transparent"/>

@@ -6,7 +6,7 @@ const CreateBlue = () => {
   const {date, hour, minutes, seconds, day,} = useContext(NoteContext)
 
   return (
-    <div className="bg-[#DFF2FF] md:w-[350px] md:h-[300px] rounded-[15px] px-2 py-4 ">
+    <div className="bg-[#DFF2FF] w-[90%] md:w-[350px] md:h-[300px] rounded-[15px] px-2 py-4 ">
       <h1 className="text-[12px] font-semibold">1{date}</h1>
       <div className="mt-[3px] flex items-center justify-between w-full">
         <input
