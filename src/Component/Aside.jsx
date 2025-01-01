@@ -1,9 +1,10 @@
 import { useContext } from "react";
 import { FaCalendarPlus } from "react-icons/fa";
-import {NoteContext} from "../Context/NoteProvider";
+import { NoteContext } from "../Context/NoteProvider";
 
 const Aside = () => {
-  const { toggle, Buttercream, Blue, Pink, isShowing, divs } = useContext(NoteContext);
+  // const { toggle, Buttercream, Blue, Pink, isShowing, divs } = useContext(NoteContext);
+  const { toggle, isShowing, createNote } = useContext(NoteContext);
   return (
     <div className="flex flex-col items-center justify-center w-full gap-2 py-3 md:pt-10">
       <div
@@ -13,7 +14,9 @@ const Aside = () => {
         <FaCalendarPlus />
         <h1 className="font-bold">Add Note</h1>
       </div>
-      {isShowing && (
+        <button onClick={() => createNote("#DFF2FF")}>Add Blue Note</button>
+        <button onClick={() => createNote("#FFD7D5")}>Add Pink Note</button>
+      {/* {isShowing && (
         <div className="flex flex-row gap-3 cursor-pointer md:flex-col">
           <div
             className="w-4 h-4 bg-[#FFF6CA] rounded-full md:h-6 md:w-6"
@@ -34,7 +37,7 @@ const Aside = () => {
             }}
           ></div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
