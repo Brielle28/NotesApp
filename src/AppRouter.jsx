@@ -1,7 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./App.css";
 import Note from "./Pages/Note";
-import NoteProvider from "./Context/NoteProvider";
 const routing = createBrowserRouter([
   {
     path: "/",
@@ -11,9 +10,7 @@ const routing = createBrowserRouter([
 const AppRouter = () => {
   return (
     <>
-      <NoteProvider>
-        <RouterProvider router={routing} />
-      </NoteProvider>
+      <RouterProvider router={routing} />
     </>
   );
 };
