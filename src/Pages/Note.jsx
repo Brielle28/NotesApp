@@ -76,6 +76,7 @@ const NotesApp = () => {
       {/* add note */}
       <div className="fixed top-0 md:relative flex w-full items-start md:items-start justify-center md:min-h-screen mb-6 bg-white md:w-[17%]">
         <div className="relative color-picker-container">
+          {/* button for color picker */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -86,9 +87,9 @@ const NotesApp = () => {
             <FaCalendarPlus className="text-[20px] font-bold" />
             <h1 className="font-bold text-[18px]">Add New Note</h1>
           </button>
-
+          {/* color picker */}
           {showColorPicker && (
-            <div className="absolute flex gap-2 p-2 bg-white rounded-lg shadow-lg left-9 top-[70px]">
+            <div className="absolute flex gap-2 p-2 bg-white rounded-lg shadow-lg left-9 top-[50px] md:top-[70px]">
               <button
                 onClick={() => addNote("green")}
                 className="w-8 h-8 bg-[#FFF6CA] rounded-full hover:ring-2 ring-[#f5eab5] transition-all"
@@ -106,78 +107,90 @@ const NotesApp = () => {
         </div>
       </div>
       {/* notes display */}
-      <div className="w-[80%] md:pl-10 mt-20 md:mt-0">
-        <div className="hidden gap-2 md:items-center md:flex md:mt-9 ">
-          <CgNotes className="text-[20px]" />
-          <h1 className="font-bold text-[20px]">Notes ({notes.length})</h1>
+      {notes.length === 0 ? (
+        <div className="w-[80%] md:pl-10 mt-20 md:mt-0">
+          <div className="hidden gap-2 md:items-center md:flex md:mt-9 ">
+            <CgNotes className="text-[20px]" />
+            <h1 className="font-bold text-[20px]">Notes ({notes.length})</h1>
+          </div>
+          <div className="flex items-center justify-center w-full md:mt-52">
+            <h1 className="font-semibold text-center text-black">No Notes Found : click the <span className="font-bold"> Add new note </span> button to add a note </h1>
+          </div>
         </div>
+      ) : (
+        <div className="w-[80%] md:pl-10 mt-20 md:mt-0">
+          <div className="hidden gap-2 md:items-center md:flex md:mt-9 ">
+            <CgNotes className="text-[20px]" />
+            <h1 className="font-bold text-[20px]">Notes ({notes.length})</h1>
+          </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 w-[100%] mt-3 pb-6">
-          {notes.map((note) => (
-            <div
-              key={note.id}
-              className={`p-4 rounded-lg shadow ${note.color} transition-transform hover:scale-[1.02]`}
-            >
-              <div className="mb-2 text-sm text-gray-500">{note.date}</div>
-              {note.isEditing ? (
-                <>
-                  <input
-                    type="text"
-                    value={note.title}
-                    onChange={(e) =>
-                      updateNote(note.id, "title", e.target.value)
-                    }
-                    placeholder="Title"
-                    className="w-full p-1 mb-2 rounded bg-white/50 focus:outline-none focus:ring-1"
-                    autoFocus
-                  />
-                  <textarea
-                    value={note.content}
-                    onChange={(e) =>
-                      updateNote(note.id, "content", e.target.value)
-                    }
-                    placeholder="Note content..."
-                    className="w-full h-32 p-1 rounded resize-none bg-white/50 focus:outline-none focus:ring-1"
-                  />
-                  <button
-                    onClick={() => saveNote(note.id)}
-                    className="flex items-center gap-1 px-3 py-1 mt-2 transition-shadow bg-white rounded-lg shadow-sm hover:shadow"
-                  >
-                    <CiCircleCheck size={16} />
-                    Save
-                  </button>
-                </>
-              ) : (
-                <div
-                  className="cursor-pointer h-52"
-                  onClick={(e) => {
-                    // Prevent editing when clicking the delete button
-                    if (!e.target.closest(".delete-button")) {
-                      startEditing(note.id);
-                    }
-                  }}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <h3 className="mb-2 font-bold hover:text-gray-700">
-                      {note.title || "Untitled"}
-                    </h3>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 w-[100%] mt-3 pb-6">
+            {notes.map((note) => (
+              <div
+                key={note.id}
+                className={`p-4 rounded-lg shadow ${note.color} transition-transform hover:scale-[1.02]`}
+              >
+                <div className="mb-2 text-sm text-gray-500">{note.date}</div>
+                {note.isEditing ? (
+                  <>
+                    <input
+                      type="text"
+                      value={note.title}
+                      onChange={(e) =>
+                        updateNote(note.id, "title", e.target.value)
+                      }
+                      placeholder="Title"
+                      className="w-full p-1 mb-2 rounded bg-white/50 focus:outline-none focus:ring-1"
+                      autoFocus
+                    />
+                    <textarea
+                      value={note.content}
+                      onChange={(e) =>
+                        updateNote(note.id, "content", e.target.value)
+                      }
+                      placeholder="Note content..."
+                      className="w-full h-32 p-1 rounded resize-none bg-white/50 focus:outline-none focus:ring-1"
+                    />
                     <button
-                      onClick={() => deleteNote(note.id)}
-                      className="p-1 transition-colors rounded-full hover:bg-white/50 delete-button"
+                      onClick={() => saveNote(note.id)}
+                      className="flex items-center gap-1 px-3 py-1 mt-2 transition-shadow bg-white rounded-lg shadow-sm hover:shadow"
                     >
-                      <MdOutlineDeleteSweep className="text-red-500 text-[22px]" />
+                      <CiCircleCheck size={16} />
+                      Save
                     </button>
+                  </>
+                ) : (
+                  <div
+                    className="cursor-pointer h-52"
+                    onClick={(e) => {
+                      // Prevent editing when clicking the delete button
+                      if (!e.target.closest(".delete-button")) {
+                        startEditing(note.id);
+                      }
+                    }}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <h3 className="mb-2 font-bold hover:text-gray-700">
+                        {note.title || "Untitled"}
+                      </h3>
+                      <button
+                        onClick={() => deleteNote(note.id)}
+                        className="p-1 transition-colors rounded-full hover:bg-white/50 delete-button"
+                      >
+                        <MdOutlineDeleteSweep className="text-red-500 text-[22px]" />
+                      </button>
+                    </div>
+                    <div className="w-full h-[1px] bg-black/10"></div>
+                    <p className="w-full mt-2 hover:text-gray-700">
+                      {note.content || "Empty note"}
+                    </p>
                   </div>
-                  <div className="w-full h-[1px] bg-black/10"></div>
-                  <p className="w-full mt-2 hover:text-gray-700">
-                    {note.content || "Empty note"}
-                  </p>
-                </div>
-              )}
-            </div>
-          ))}
+                )}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
