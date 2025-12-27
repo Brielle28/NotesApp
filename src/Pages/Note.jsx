@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaCalendarPlus } from "react-icons/fa";
+import { FaCalendarPlus, FaSearch } from "react-icons/fa";
 import { CiCircleCheck } from "react-icons/ci";
 import { CgNotes } from "react-icons/cg";
 import { MdOutlineDeleteSweep } from "react-icons/md";
@@ -10,6 +10,7 @@ const NotesApp = () => {
     return savedNotes ? JSON.parse(savedNotes) : [];
   });
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
@@ -71,10 +72,19 @@ const NotesApp = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  // Filter notes based on search query
+  const filteredNotes = notes.filter((note) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    const title = (note.title || "").toLowerCase();
+    const content = (note.content || "").toLowerCase();
+    return title.includes(query) || content.includes(query);
+  });
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 md:justify-start md:items-start md:flex-row">
       {/* add note */}
-      <div className="fixed top-0 md:relative flex w-full items-start md:items-start justify-center md:min-h-screen mb-6 bg-white md:w-[17%]">
+      <div className="fixed top-0 left-0 z-10 flex w-full items-start md:items-start justify-center md:min-h-screen mb-6 bg-white md:w-[17%] md:fixed md:top-0 md:left-0 md:h-screen">
         <div className="relative color-picker-container">
           {/* button for color picker */}
           <button
@@ -85,7 +95,7 @@ const NotesApp = () => {
             className="flex items-center gap-2 px-4 py-2 my-3 transition-colors rounded-lg md:mt-7"
           >
             <FaCalendarPlus className="text-[20px] font-bold" />
-            <h1 className="font-bold text-[18px]">Add New Note</h1>
+            <h1 className="font-bold text-[12px] md:text-[10px] lg:text-[14px] xl:text-[18px]">Add New Note</h1>
           </button>
           {/* color picker */}
           {showColorPicker && (
@@ -108,7 +118,7 @@ const NotesApp = () => {
       </div>
       {/* notes display */}
       {notes.length === 0 ? (
-        <div className="w-[80%] md:pl-10 mt-20 md:mt-0">
+        <div className="w-[80%] md:pl-10 mt-20 md:mt-0 md:ml-[17%] md:h-screen md:overflow-y-auto">
           <div className="hidden gap-2 md:items-center md:flex md:mt-9 ">
             <CgNotes className="text-[20px]" />
             <h1 className="font-bold text-[20px]">Notes ({notes.length})</h1>
@@ -118,14 +128,53 @@ const NotesApp = () => {
           </div>
         </div>
       ) : (
-        <div className="w-[80%] md:pl-10 mt-20 md:mt-0">
-          <div className="hidden gap-2 md:items-center md:flex md:mt-9 ">
-            <CgNotes className="text-[20px]" />
-            <h1 className="font-bold text-[20px]">Notes ({notes.length})</h1>
+        <div className="w-[80%] md:pl-10 mt-20 md:mt-0 md:ml-[17%] md:h-screen md:overflow-y-auto">
+          <div className="hidden md:flex md:items-center md:justify-between md:mt-9">
+            <div className="flex gap-2 items-center">
+              <CgNotes className="text-[20px]" />
+              <h1 className="font-bold text-[20px]">Notes ({filteredNotes.length})</h1>
+            </div>
+            {/* Search input */}
+            <div className="relative flex items-center">
+              <FaSearch className="absolute left-3 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search notes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 w-64 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              />
+            </div>
+          </div>
+          {/* Mobile search input */}
+          <div className="md:hidden mt-4 mb-4">
+            <div className="relative flex items-center">
+              <FaSearch className="absolute left-3 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search notes..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              />
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 w-[100%] mt-3 pb-6">
-            {notes.map((note) => (
+          {filteredNotes.length === 0 ? (
+            <div className="flex items-center justify-center w-full md:mt-52">
+              <h1 className="font-semibold text-center text-black">
+                {searchQuery ? (
+                  `No notes found matching "${searchQuery}"`
+                ) : (
+                  <>
+                    No Notes Found : click the <span className="font-bold"> Add new note </span> button to add a note
+                  </>
+                )}
+              </h1>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 w-[100%] mt-3 pb-6">
+              {filteredNotes.map((note) => (
               <div
                 key={note.id}
                 className={`p-4 rounded-lg shadow ${note.color} transition-transform hover:scale-[1.02]`}
@@ -187,8 +236,9 @@ const NotesApp = () => {
                   </div>
                 )}
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
