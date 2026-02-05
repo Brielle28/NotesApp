@@ -20,8 +20,10 @@ The **NotesApp** is a lightweight and intuitive note-taking web application buil
 - **Create Notes:** Add new notes with a choice of three customizable color themes for easy categorization.
 - **Inline Editing:** Edit the title and content of notes in real time.
 - **Persistent Storage:** Automatically saves notes to `localStorage`, ensuring data is not lost on page reloads.
+- **Search & Filter:** Quickly find notes with full-text search and toggle between all notes and pinned favorites.
+- **Pinned Notes:** Highlight important notes by pinning them to the top of the list.
 - **Delete Notes:** Easily remove unwanted notes.
-- **Date Tracking:** Each note automatically records the date and time it was created.
+- **Smart Timestamps:** Each note tracks when it was created and last updated, with human‑friendly relative time labels.
 - **Responsive Design:** Optimized for both mobile and desktop devices.
 - **Interactive User Interface:** Smooth transitions and hover effects for enhanced usability.
 - **Click-to-Edit Functionality:** Quickly switch between viewing and editing mode for each note.
