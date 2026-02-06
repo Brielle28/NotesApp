@@ -5,6 +5,7 @@ import { CgNotes } from "react-icons/cg";
 import { MdOutlineDeleteSweep } from "react-icons/md";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import ConfirmModal from "../components/ConfirmModal";
+import RichTextEditor from "../components/RichTextEditor";
 
 const colors = {
   green: "bg-[#FFF6CA]",
@@ -354,14 +355,14 @@ const NotesApp = () => {
                       className="w-full p-1 mb-2 rounded bg-white/50 focus:outline-none focus:ring-1"
                       autoFocus
                     />
-                    <textarea
-                      value={note.content}
-                      onChange={(e) =>
-                        updateNote(note.id, "content", e.target.value)
-                      }
-                      placeholder="Note content..."
-                      className="w-full h-32 p-1 rounded resize-none bg-white/50 focus:outline-none focus:ring-1"
-                    />
+                    <div className="mt-1">
+                      <RichTextEditor
+                        value={note.content}
+                        onChange={(html) =>
+                          updateNote(note.id, "content", html)
+                        }
+                      />
+                    </div>
                     <button
                       onClick={() => saveNote(note.id)}
                       className="flex items-center gap-1 px-3 py-1 mt-2 bg-white rounded-lg shadow-sm transition-shadow hover:shadow"
@@ -414,9 +415,16 @@ const NotesApp = () => {
                       </div>
                     </div>
                     <div className="w-full h-[1px] bg-black/10"></div>
-                    <p className="w-full mt-2 text-sm leading-relaxed hover:text-gray-700 line-clamp-6">
-                      {note.content || "Empty note"}
-                    </p>
+                    <div className="w-full mt-2 text-sm leading-relaxed hover:text-gray-700 line-clamp-6">
+                      {note.content ? (
+                        <div
+                          className="tiptap"
+                          dangerouslySetInnerHTML={{ __html: note.content }}
+                        />
+                      ) : (
+                        "Empty note"
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
