@@ -18,11 +18,13 @@ The **NotesApp** is a lightweight and intuitive note-taking web application buil
 ## Features
 
 - **Create Notes:** Add new notes with a choice of three customizable color themes for easy categorization.
-- **Inline Editing:** Edit the title and content of notes in real time.
+- **Rich Inline Editing:** Edit the title and content of notes in real time using a rich text editor with bold, italic, underline, lists, and todo checkboxes.
 - **Persistent Storage:** Automatically saves notes to `localStorage`, ensuring data is not lost on page reloads.
 - **Search & Filter:** Quickly find notes with full-text search and toggle between all notes and pinned favorites.
-- **Pinned Notes:** Highlight important notes by pinning them to the top of the list.
-- **Delete Notes:** Easily remove unwanted notes.
+- **Pinned Notes:** Highlight important notes by pinning them to the top of the list. Pinned notes always appear before others.
+- **Flexible Sorting:** Sort notes by **Last edited**, **Created**, **Title**, or **Color**, while still keeping pinned notes at the top.
+- **Bulk Actions:** Enter selection mode to select multiple notes at once, then **Pin**, **Unpin**, or **Delete** them in a single action.
+- **Delete Notes with Confirmation:** Remove unwanted notes with a custom confirmation modal to prevent accidental deletions.
 - **Smart Timestamps:** Each note tracks when it was created and last updated, with human‑friendly relative time labels.
 - **Responsive Design:** Optimized for both mobile and desktop devices.
 - **Interactive User Interface:** Smooth transitions and hover effects for enhanced usability.
@@ -84,12 +86,18 @@ The **NotesApp** is a lightweight and intuitive note-taking web application buil
    Click the **"Add New Note"** button and choose a color theme. This creates a new editable note.
    
 2. **Editing a Note:**  
-   Click on the note content to enable editing mode. Add a title, write content, and click the **"Save"** button to save changes.
+   Click on the note content to enable editing mode. Add a title, write content using the rich text toolbar (bold, italic, underline, lists, and todo items), and click the **"Save"** button to save changes.
    
-3. **Deleting a Note:**  
-   Click the delete icon (🗑️) in the top-right corner of a note to remove it permanently.
+3. **Sorting Notes:**  
+   Use the **Sort by** dropdown to change the order of notes between **Last edited**, **Created**, **Title**, and **Color**. Pinned notes will always appear before other notes.
 
-4. **Persistent Storage:**  
+4. **Bulk Selecting Notes:**  
+   Click the **Select** button to enter selection mode, then tap notes to select or deselect them. Use the **Pin**, **Unpin**, or **Delete** buttons in the selection bar to apply changes to all selected notes at once.
+
+5. **Deleting a Note:**  
+   Click the delete icon (🗑️) in the top-right corner of a note. A confirmation modal will appear to confirm the deletion before the note is removed.
+
+6. **Persistent Storage:**  
    Notes are saved automatically and will remain available even after the page is refreshed or the browser is closed.
 
 ---

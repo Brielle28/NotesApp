@@ -5,6 +5,7 @@
 .tiptap {
   min-height: 6rem;
   outline: none;
+  cursor: text;
 }
 
 .tiptap p {

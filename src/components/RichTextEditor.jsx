@@ -1,16 +1,52 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
+import Underline from "@tiptap/extension-underline";
+import { LuList, LuListOrdered } from "react-icons/lu";
+
+const sortTaskLists = (node) => {
+  if (!node || typeof node !== "object") return node;
+
+  const sortedNode = { ...node };
+
+  if (Array.isArray(sortedNode.content)) {
+    sortedNode.content = sortedNode.content.map(sortTaskLists);
+
+    if (sortedNode.type === "taskList") {
+      const unchecked = [];
+      const checked = [];
+
+      sortedNode.content.forEach((child) => {
+        if (child?.type === "taskItem" && child.attrs) {
+          if (child.attrs.checked) {
+            checked.push(child);
+          } else {
+            unchecked.push(child);
+          }
+        } else {
+          unchecked.push(child);
+        }
+      });
+
+      sortedNode.content = [...unchecked, ...checked];
+    }
+  }
+
+  return sortedNode;
+};
 
 const RichTextEditor = ({ value, onChange }) => {
+  const isSortingRef = useRef(false);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         bulletList: { keepMarks: true, keepAttributes: false },
         orderedList: { keepMarks: true, keepAttributes: false },
       }),
+      Underline,
       TaskList,
       TaskItem.configure({
         nested: true,
@@ -18,6 +54,25 @@ const RichTextEditor = ({ value, onChange }) => {
     ],
     content: value || "",
     onUpdate: ({ editor }) => {
+      if (isSortingRef.current) {
+        isSortingRef.current = false;
+        const finalHtml = editor.getHTML();
+        onChange?.(finalHtml);
+        return;
+      }
+
+      const doc = editor.getJSON();
+      const sortedDoc = sortTaskLists(doc);
+
+      const original = JSON.stringify(doc);
+      const sorted = JSON.stringify(sortedDoc);
+
+      if (original !== sorted) {
+        isSortingRef.current = true;
+        editor.commands.setContent(sortedDoc, false);
+        return;
+      }
+
       const html = editor.getHTML();
       onChange?.(html);
     },
@@ -40,13 +95,13 @@ const RichTextEditor = ({ value, onChange }) => {
   }
 
   const buttonBase =
-    "px-2 py-1 rounded text-xs font-medium text-gray-700 hover:bg-gray-200 transition-colors";
+    "px-[6px] py-[2px] rounded-md text-xs font-semibold text-gray-600 hover:bg-gray-200 transition-colors";
 
-  const buttonActive = "bg-gray-300";
+  const buttonActive = "bg-gray-300 text-gray-900";
 
   return (
     <div className="w-full rounded-lg border border-gray-200 bg-white/70">
-      <div className="flex flex-wrap gap-1 border-b border-gray-200 bg-gray-50 px-2 py-1 text-xs">
+      <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-gray-50 px-2 py-1 text-xs">
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleBold().run()}
@@ -67,12 +122,31 @@ const RichTextEditor = ({ value, onChange }) => {
         </button>
         <button
           type="button"
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          className={`${buttonBase} ${
+            editor.isActive("underline") ? buttonActive : ""
+          }`}
+        >
+          U
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          className={`${buttonBase} ${
+            editor.isActive("strike") ? buttonActive : ""
+          }`}
+        >
+          S
+        </button>
+        <span className="mx-1 h-4 w-px bg-gray-300" />
+        <button
+          type="button"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           className={`${buttonBase} ${
             editor.isActive("bulletList") ? buttonActive : ""
           }`}
         >
-          • List
+          <LuList size={14} />
         </button>
         <button
           type="button"
@@ -81,7 +155,7 @@ const RichTextEditor = ({ value, onChange }) => {
             editor.isActive("orderedList") ? buttonActive : ""
           }`}
         >
-          1. List
+          <LuListOrdered size={14} />
         </button>
         <button
           type="button"

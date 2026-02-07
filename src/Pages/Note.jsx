@@ -75,7 +75,11 @@ const NotesApp = () => {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all"); // "all" | "pinned"
+  const [sortBy, setSortBy] = useState("lastEdited"); // "lastEdited" | "created" | "title" | "color"
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedNoteIds, setSelectedNoteIds] = useState([]);
   const [deleteModalNoteId, setDeleteModalNoteId] = useState(null);
+  const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("notes", JSON.stringify(notes));
@@ -150,6 +154,40 @@ const NotesApp = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
+  const toggleSelectMode = () => {
+    setIsSelectionMode((prev) => !prev);
+    setSelectedNoteIds([]);
+  };
+
+  const toggleSelectNote = (id) => {
+    setSelectedNoteIds((prev) =>
+      prev.includes(id) ? prev.filter((noteId) => noteId !== id) : [...prev, id]
+    );
+  };
+
+  const hasSelection = selectedNoteIds.length > 0;
+
+  const bulkUpdatePinned = (pinned) => {
+    if (!hasSelection) return;
+
+    setNotes((prev) =>
+      prev.map((note) =>
+        selectedNoteIds.includes(note.id)
+          ? { ...note, isPinned: pinned, updatedAt: new Date().toISOString() }
+          : note
+      )
+    );
+    setSelectedNoteIds([]);
+  };
+
+  const bulkDelete = () => {
+    if (!hasSelection) return;
+
+    setNotes((prev) => prev.filter((note) => !selectedNoteIds.includes(note.id)));
+    setSelectedNoteIds([]);
+    setIsSelectionMode(false);
+  };
+
   const filteredNotes = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
 
@@ -167,18 +205,42 @@ const NotesApp = () => {
       result = result.filter((note) => note.isPinned);
     }
 
-    return [...result].sort((a, b) => {
+    const getTime = (note, field) => {
+      const raw = note[field] || note.createdAt || note.date;
+      const date = new Date(raw);
+      const time = date.getTime();
+      return Number.isNaN(time) ? 0 : time;
+    };
+
+    const sorted = [...result].sort((a, b) => {
       if (a.isPinned !== b.isPinned) {
         return a.isPinned ? -1 : 1;
       }
-      const aTime = new Date(a.updatedAt || a.createdAt || a.date).getTime();
-      const bTime = new Date(b.updatedAt || b.createdAt || b.date).getTime();
-      return bTime - aTime;
+
+      switch (sortBy) {
+        case "created":
+          return getTime(b, "createdAt") - getTime(a, "createdAt");
+        case "title": {
+          const titleA = (a.title || "").toLowerCase();
+          const titleB = (b.title || "").toLowerCase();
+          return titleA.localeCompare(titleB);
+        }
+        case "color": {
+          const colorA = a.color || "";
+          const colorB = b.color || "";
+          return colorA.localeCompare(colorB);
+        }
+        case "lastEdited":
+        default:
+          return getTime(b, "updatedAt") - getTime(a, "updatedAt");
+      }
     });
-  }, [notes, searchQuery, activeFilter]);
+
+    return sorted;
+  }, [notes, searchQuery, activeFilter, sortBy]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 md:justify-start md:items-start md:flex-row">
+    <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100 md:items-start md:flex-row">
       {/* add note */}
       <div className="fixed top-0 left-0 z-10 flex w-full items-start md:items-start justify-center md:min-h-screen mb-6 bg-white md:w-[17%] md:fixed md:top-0 md:left-0 md:h-screen">
         <div className="relative color-picker-container">
@@ -224,16 +286,12 @@ const NotesApp = () => {
           </div>
         </div>
       ) : (
-        <div className="w-[80%] md:pl-10 mt-20 md:mt-0 md:ml-[17%] md:h-screen md:overflow-y-auto">
+        <div className="w-full max-w-sm md:max-w-none md:w-[80%] md:pl-10 mt-20 md:mt-0 md:ml-[17%] md:h-screen md:overflow-y-auto">
           <div className="hidden md:flex md:items-center md:justify-between md:mt-9">
             <div className="flex items-center gap-2">
               <CgNotes className="text-[20px]" />
               <div>
-                <h1 className="text-[20px] font-bold">Notes</h1>
-                <p className="text-sm text-gray-500">
-                  {filteredNotes.length}{" "}
-                  {filteredNotes.length === 1 ? "note" : "notes"}
-                </p>
+                <h1 className="text-[20px] font-bold">Notes({filteredNotes.length})</h1>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -261,6 +319,30 @@ const NotesApp = () => {
                   Pinned
                 </button>
               </div>
+              <button
+                type="button"
+                onClick={toggleSelectMode}
+                className={`rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
+                  isSelectionMode
+                    ? "bg-gray-900 text-white border-gray-900"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                }`}
+              >
+                {isSelectionMode ? "Done" : "Select"}
+              </button>
+              <div className="flex items-center gap-3">
+                <label className="text-xs text-gray-500">Sort by</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="rounded-md border border-gray-300 bg-white px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="lastEdited">Last edited</option>
+                  <option value="created">Created</option>
+                  <option value="title">Title</option>
+                  <option value="color">Color</option>
+                </select>
+              </div>
               {/* Search input */}
               <div className="relative flex items-center">
                 <FaSearch className="absolute left-3 text-gray-400" />
@@ -275,7 +357,7 @@ const NotesApp = () => {
             </div>
           </div>
           {/* Mobile search input */}
-          <div className="md:hidden mt-4 mb-4">
+          <div className="md:hidden sticky top-16 z-20 mt-4 mb-2 pb-2 bg-gray-100">
             <div className="relative flex items-center">
               <FaSearch className="absolute left-3 text-gray-400" />
               <input
@@ -310,6 +392,32 @@ const NotesApp = () => {
                 Pinned
               </button>
             </div>
+            <div className="mt-2 flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={toggleSelectMode}
+                className={`rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
+                  isSelectionMode
+                    ? "bg-gray-900 text-white border-gray-900"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                }`}
+              >
+                {isSelectionMode ? "Done" : "Select"}
+              </button>
+              <div className="flex items-center gap-2">
+                <label className="text-[11px] text-gray-500">Sort</label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="flex-1 rounded-md border border-gray-300 bg-white px-2 py-1 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="lastEdited">Last edited</option>
+                  <option value="created">Created</option>
+                  <option value="title">Title</option>
+                  <option value="color">Color</option>
+                </select>
+              </div>
+            </div>
           </div>
 
           {filteredNotes.length === 0 ? (
@@ -334,6 +442,52 @@ const NotesApp = () => {
               </h1>
             </div>
           ) : (
+            <>
+            {isSelectionMode && (
+              <div className="sticky top-[112px] z-10 mb-2 flex items-center justify-between rounded-lg bg-white px-3 py-2 text-xs shadow-sm md:static md:mt-3">
+                <span className="font-medium">
+                  {hasSelection ? `${selectedNoteIds.length} selected` : "Tap notes to select"}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => bulkUpdatePinned(true)}
+                    disabled={!hasSelection}
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${
+                      hasSelection
+                        ? "bg-gray-900 text-white"
+                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    }`}
+                  >
+                    Pin
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => bulkUpdatePinned(false)}
+                    disabled={!hasSelection}
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${
+                      hasSelection
+                        ? "bg-white text-gray-700 border border-gray-300"
+                        : "bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed"
+                    }`}
+                  >
+                    Unpin
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => hasSelection && setIsBulkDeleteOpen(true)}
+                    disabled={!hasSelection}
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${
+                      hasSelection
+                        ? "bg-red-500 text-white"
+                        : "bg-red-100 text-red-300 cursor-not-allowed"
+                    }`}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 w-[100%] mt-3 pb-6">
               {filteredNotes.map((note) => (
               <div
@@ -375,8 +529,13 @@ const NotesApp = () => {
                   <div
                     className="cursor-pointer h-52"
                     onClick={(e) => {
-                      // Prevent editing when clicking the delete button
-                      if (!e.target.closest(".delete-button")) {
+                      if (isSelectionMode) {
+                        e.stopPropagation();
+                        toggleSelectNote(note.id);
+                        return;
+                      }
+                      // Prevent editing when clicking the delete button or checkbox area
+                      if (!e.target.closest(".delete-button") && !e.target.closest(".select-checkbox")) {
                         startEditing(note.id);
                       }
                     }}
@@ -386,6 +545,18 @@ const NotesApp = () => {
                         {note.title || "Untitled"}
                       </h3>
                       <div className="flex items-center gap-1">
+                        {isSelectionMode && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleSelectNote(note.id);
+                            }}
+                            className="select-checkbox flex h-6 w-6 items-center justify-center rounded-full border border-gray-300 bg-white text-[12px] font-semibold text-gray-600"
+                          >
+                            {selectedNoteIds.includes(note.id) ? "✓" : ""}
+                          </button>
+                        )}
                         <button
                           type="button"
                           onClick={(e) => {
@@ -430,6 +601,7 @@ const NotesApp = () => {
               </div>
               ))}
             </div>
+            </>
           )}
         </div>
       )}
@@ -447,6 +619,20 @@ const NotesApp = () => {
           }
         }}
         onCancel={() => setDeleteModalNoteId(null)}
+        danger
+      />
+
+      <ConfirmModal
+        isOpen={isBulkDeleteOpen}
+        title="Delete selected notes?"
+        message={`Delete ${selectedNoteIds.length} selected note${selectedNoteIds.length === 1 ? "" : "s"}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={() => {
+          bulkDelete();
+          setIsBulkDeleteOpen(false);
+        }}
+        onCancel={() => setIsBulkDeleteOpen(false)}
         danger
       />
     </div>
