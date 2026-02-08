@@ -94,6 +94,30 @@ const RichTextEditor = ({ value, onChange }) => {
     );
   }
 
+  const applyMark = (type) => {
+    if (!editor) return;
+
+    const chain = editor.chain().focus();
+
+    // Always toggle: turns format on if off, off if on. Works for both
+    // selected text and for cursor (so you can disable format to continue typing plain).
+    if (type === "bold") {
+      chain.toggleBold().run();
+      return;
+    }
+    if (type === "italic") {
+      chain.toggleItalic().run();
+      return;
+    }
+    if (type === "underline") {
+      chain.toggleUnderline().run();
+      return;
+    }
+    if (type === "strike") {
+      chain.toggleStrike().run();
+    }
+  };
+
   const buttonBase =
     "px-[6px] py-[2px] rounded-md text-xs font-semibold text-gray-600 hover:bg-gray-200 transition-colors";
 
@@ -104,7 +128,7 @@ const RichTextEditor = ({ value, onChange }) => {
       <div className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-gray-50 px-2 py-1 text-xs">
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleBold().run()}
+          onClick={() => applyMark("bold")}
           className={`${buttonBase} ${
             editor.isActive("bold") ? buttonActive : ""
           }`}
@@ -113,7 +137,7 @@ const RichTextEditor = ({ value, onChange }) => {
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
+          onClick={() => applyMark("italic")}
           className={`${buttonBase} ${
             editor.isActive("italic") ? buttonActive : ""
           }`}
@@ -122,7 +146,7 @@ const RichTextEditor = ({ value, onChange }) => {
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          onClick={() => applyMark("underline")}
           className={`${buttonBase} ${
             editor.isActive("underline") ? buttonActive : ""
           }`}
@@ -131,7 +155,7 @@ const RichTextEditor = ({ value, onChange }) => {
         </button>
         <button
           type="button"
-          onClick={() => editor.chain().focus().toggleStrike().run()}
+          onClick={() => applyMark("strike")}
           className={`${buttonBase} ${
             editor.isActive("strike") ? buttonActive : ""
           }`}

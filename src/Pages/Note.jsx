@@ -241,23 +241,23 @@ const NotesApp = () => {
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100 md:items-start md:flex-row">
-      {/* add note */}
-      <div className="fixed top-0 left-0 z-10 flex w-full items-start md:items-start justify-center md:min-h-screen mb-6 bg-white md:w-[17%] md:fixed md:top-0 md:left-0 md:h-screen">
-        <div className="relative color-picker-container">
+      {/* add note — tablet: proper panel (20%), desktop: 17% */}
+      <div className="fixed top-0 left-0 z-10 flex w-full items-start justify-center mb-6 bg-white border-r border-gray-200 md:items-start md:min-h-screen md:mb-0 md:w-[20%] md:min-w-[160px] md:max-w-[220px] md:flex-shrink-0 lg:w-[17%] lg:min-w-0 lg:max-w-none md:fixed md:top-0 md:left-0 md:h-screen md:py-6 md:px-4">
+        <div className="relative color-picker-container flex flex-col w-full md:items-stretch">
           {/* button for color picker */}
           <button
             onClick={(e) => {
               e.stopPropagation();
               setShowColorPicker(!showColorPicker);
             }}
-            className="flex items-center gap-2 px-4 py-2 my-3 transition-colors rounded-lg md:mt-7"
+            className="flex items-center gap-2 px-4 py-2 my-3 transition-colors md:my-0 md:mb-4 md:py-3 md:px-3 md:gap-2 md:justify-center  md:hover:bg-gray-100 md:border md:border-gray-200"
           >
-            <FaCalendarPlus className="text-[20px] font-bold" />
-            <h1 className="font-bold text-[12px] md:text-[10px] lg:text-[14px] xl:text-[18px]">Add New Note</h1>
+            <FaCalendarPlus className="text-[20px] font-bold md:text-xl" />
+            <h1 className="font-bold text-[12px] md:text-sm">Add New Note</h1>
           </button>
           {/* color picker */}
           {showColorPicker && (
-            <div className="absolute flex gap-2 p-2 bg-white rounded-lg shadow-lg left-9 top-[50px] md:top-[70px]">
+            <div className="absolute flex gap-2 p-2 bg-white rounded-lg shadow-lg left-9 top-[50px] md:left-0 md:right-0 md:top-full md:mt-3 md:relative md:flex md:justify-center md:shadow md:bg-gray-50 md:border md:border-gray-200 md:p-3 md:rounded-xl">
               <button
                 onClick={() => addNote("green")}
                 className="w-8 h-8 bg-[#FFF6CA] rounded-full hover:ring-2 ring-[#f5eab5] transition-all"
@@ -276,8 +276,8 @@ const NotesApp = () => {
       </div>
       {/* notes display */}
       {notes.length === 0 ? (
-        <div className="w-[80%] md:pl-10 mt-20 md:mt-0 md:ml-[17%] md:h-screen md:overflow-y-auto">
-          <div className="hidden gap-2 md:items-center md:flex md:mt-9 ">
+        <div className="w-[80%] mt-20 md:mt-0 md:ml-[20%] lg:ml-[17%] md:w-[80%] lg:w-[80%] md:pl-6 md:pr-6 lg:pl-10 md:h-screen md:overflow-y-auto">
+          <div className="hidden gap-2 md:items-center md:flex md:mt-9">
             <CgNotes className="text-[20px]" />
             <h1 className="font-bold text-[20px]">Notes ({notes.length})</h1>
           </div>
@@ -286,15 +286,15 @@ const NotesApp = () => {
           </div>
         </div>
       ) : (
-        <div className="w-full max-w-sm md:max-w-none md:w-[80%] md:pl-10 mt-20 md:mt-0 md:ml-[17%] md:h-screen md:overflow-y-auto">
-          <div className="hidden md:flex md:items-center md:justify-between md:mt-9">
-            <div className="flex items-center gap-2">
-              <CgNotes className="text-[20px]" />
-              <div>
-                <h1 className="text-[20px] font-bold">Notes({filteredNotes.length})</h1>
+        <div className="w-full max-w-sm mt-20 md:mt-0 md:ml-[20%] lg:ml-[17%] md:w-[80%] lg:w-[80%] md:pl-6 md:pr-6 lg:pl-10 md:max-w-none md:h-screen md:overflow-y-auto md:pb-8">
+          <div className="hidden md:flex md:flex-wrap md:items-center md:justify-between md:gap-y-4 md:mt-8 md:mb-4 lg:flex-nowrap lg:mt-9 lg:mb-0 lg:gap-y-0">
+            <div className="flex items-center gap-2 md:min-w-0">
+              <CgNotes className="text-[20px] flex-shrink-0" />
+              <div className="min-w-0">
+                <h1 className="text-[20px] font-bold truncate">Notes ({filteredNotes.length})</h1>
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2 lg:gap-4 lg:flex-nowrap">
               <div className="flex items-center gap-2 rounded-full bg-white px-1 py-1 shadow-sm">
                 <button
                   type="button"
@@ -344,14 +344,14 @@ const NotesApp = () => {
                 </select>
               </div>
               {/* Search input */}
-              <div className="relative flex items-center">
+              <div className="relative flex items-center md:min-w-[200px] md:flex-1 lg:flex-initial lg:w-64">
                 <FaSearch className="absolute left-3 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search notes..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-64 rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full min-w-0 rounded-lg border border-gray-300 bg-white py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 lg:w-64"
                 />
               </div>
             </div>
@@ -488,7 +488,7 @@ const NotesApp = () => {
                 </div>
               </div>
             )}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 w-[100%] mt-3 pb-6">
+            <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3 w-full mt-3 pb-6">
               {filteredNotes.map((note) => (
               <div
                 key={note.id}
