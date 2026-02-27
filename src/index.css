@@ -18,6 +18,27 @@
   margin: 0.25rem 0;
 }
 
+.tiptap ul:not([data-type="taskList"]) {
+  list-style-type: disc;
+  list-style-position: inside;
+}
+
+.tiptap ol {
+  list-style-type: decimal;
+  list-style-position: inside;
+}
+
+.tiptap ul:not([data-type="taskList"]) li,
+.tiptap ol li {
+  margin: 0;
+}
+
+.tiptap ul:not([data-type="taskList"]) li p,
+.tiptap ol li p {
+  display: inline;
+  margin: 0;
+}
+
 .tiptap ul[data-type="taskList"] {
   list-style: none;
   padding-left: 0;
